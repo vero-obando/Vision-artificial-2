@@ -4,8 +4,15 @@ import cv2 as cv
 import numpy as np
 # Brillo y contraste 
 
-im = cv.imread('test_im.jpg')
+im = cv.imread('test_im.jpg')/255
+a = 1.5
+b = 0.2
 
+brillo = (a*im) + b
+
+cv.imshow('Brillo y contraste', brillo)
+cv.waitKey(0)
+cv.destroyAllWindows()
 
 
 # Mezcla lineal
@@ -19,30 +26,22 @@ cv.waitKey(0)
 cv.destroyAllWindows()
 
 #Correccion gamma
+y = 2
+gamma = im **y
 
-height, width = im.shape[:2]  # Obtenemos sus dimensiones
-imgGamma = np.zeros((height, width, 3), np.uint8)  # Creamos una imagen nueva
-invGamma = 1/2  # Se define el valor de Gamma
-for i in range(0, width):
-    for j in range(0, height):
-        imgGamma[j] = 255*((im[j]/255.0) ** invGamma)  # Ecucacion de correccion Gamma
-
-cv.imshow('Correccion gamma', np.hstack([im, imgGamma]))  # Mostramos las imagenes
+cv.imshow('Correccion gamma',gamma)
 cv.waitKey(0)
 cv.destroyAllWindows()
 
 # Image matting
-sky = cv.imread('sky.jpg')
-mask = cv.imread('test_im-A.jpg',0)
+sky = cv.imread('sky.jpg')/255
+mask = cv.imread('test_im-A.jpg')/255
 
-_, thresh1 = cv.threshold(mask, 100, 255, cv.THRESH_BINARY_INV)
+matting = ((1-mask)*sky) + (mask*im)
 
-gato = cv.bitwise_and(im, im, mask=mask)
-fondo= cv.bitwise_and(sky, sky, mask= thresh1)
-resl = cv.addWeighted(gato, 1,fondo, 1,0)
-
-cv.imshow('Original', im) 
-cv.imshow('Cambio de fondo',resl)   
+cv.imshow('Image matting',matting)
 cv.waitKey(0)
 cv.destroyAllWindows()
+
+
 
